@@ -1,4 +1,27 @@
-# Getting Started with Create React App
+# Hotel Management Dashboard
+
+A comprehensive front-end solution for managing hotel properties, rooms, availability, and bookings.
+
+## Overview
+
+This React-based dashboard interfaces with a Laravel backend API to provide hotel administrators with powerful tools for property and room inventory management. Key features include:
+
+- Property management (create, view, update, delete)
+- Room type configuration
+- Day-by-day availability calendar
+- Dynamic pricing controls
+- Room closure management
+- Booking overview
+
+## Tech Stack
+
+- **Frontend**: React with TypeScript
+- **UI Framework**: Material-UI (MUI)
+- **Routing**: React Router
+- **Forms**: Formik with Yup validation
+- **API Client**: Axios
+- **Date Handling**: date-fns
+- **Charts**: Recharts
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -38,6 +61,32 @@ If you aren’t satisfied with the build tool and configuration choices, you can
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Project Structure
+
+```
+src/
+├── components/           # Reusable UI components
+│   ├── layout/           # Layout components
+│   ├── properties/       # Property-related components
+│   ├── rooms/            # Room-related components
+│   └── availability/     # Availability calendar components
+├── pages/                # Top-level page components
+├── services/             # API service modules
+├── hooks/                # Custom React hooks
+├── utils/                # Utility functions
+├── types/                # TypeScript type definitions
+└── routes/               # Routing configuration
+```
+
+## API Integration
+
+This dashboard integrates with the following API endpoints:
+
+- `/api/admin/properties` - Property management
+- `/api/admin/properties/{id}/rooms` - Room management
+- `/api/admin/properties/{id}/rooms/{id}/availability` - Availability management
+- `/api/admin/bookings` - Booking management
 
 ## Learn More
 

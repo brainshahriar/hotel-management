@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "start",
+      "type": "shell",
+      "command": "npm start",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"],
+      "isBackground": true
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "npm run build",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "npm test",
+      "group": "test",
+      "problemMatcher": ["$tsc"]
+    }
+  ]
+}
