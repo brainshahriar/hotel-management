@@ -2,11 +2,12 @@ import axios, { AxiosInstance } from 'axios';
 
 // Create an Axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://walc.dotprogrammers.com/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://walc.dotprogrammers.com',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
+  withCredentials: true, // Add this line to send cookies with requests
 });
 
 // Request interceptor for API calls
