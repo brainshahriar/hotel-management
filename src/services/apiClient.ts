@@ -11,12 +11,10 @@ const apiClient: AxiosInstance = axios.create({
 
 // Request interceptor for API calls
 apiClient.interceptors.request.use(
-  (config) => {
-    // Define protected routes - admin routes and other protected endpoints
+  (config) => {    // Define protected routes - admin routes and other protected endpoints
     const protectedRoutes = [
       '/admin/',
       '/logout',
-      '/user',
       '/users',
       '/profile'
     ];
@@ -24,6 +22,7 @@ apiClient.interceptors.request.use(
     // Define explicitly public routes that should never include auth token
     const publicRoutes = [
       '/properties',
+      '/refresh',  // The refresh endpoint should not include the auth token as it's used to get a new one
     ];
     
     // Check if the current URL is a protected route
@@ -89,17 +88,47 @@ apiClient.interceptors.response.use(
     // Handle 401 errors (unauthorized)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log('401 Unauthorized error - clearing auth token');
+      console.log('401 Unauthorized error - attempting to refresh token');
       
-      // If refresh token functionality is implemented, it would go here
-      // For now, redirect to login page
+      // Check if we have a refresh token
+      const refreshToken = localStorage.getItem('refresh_token');
+      
+      // Attempt to refresh the token
+      if (refreshToken && !originalRequest.url?.includes('/refresh')) {
+        try {
+          // Import AuthService using require to avoid circular dependency
+          const AuthService = require('./authService').default;
+          
+          // Try to refresh the token
+          console.log('Attempting to refresh the access token...');
+          const refreshResult = await AuthService.refreshToken(refreshToken);
+          
+          if (refreshResult.success && refreshResult.token) {
+            console.log('Token refreshed successfully, retrying original request');
+            
+            // Update the Authorization header with the new token
+            originalRequest.headers.Authorization = `Bearer ${refreshResult.token}`;
+            
+            // Retry the original request with the new token
+            return apiClient(originalRequest);
+          } else {
+            console.error('Token refresh failed, redirecting to login');
+          }
+        } catch (refreshError) {
+          console.error('Error during token refresh:', refreshError);
+        }
+      }
+      
+      // If refresh token is not available or refresh failed, proceed with logout
+      console.log('No refresh token available or refresh failed - clearing auth data');
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
       localStorage.removeItem('auth_time');
       
       // Don't redirect if this is a logout request or if already on login page
       const isLogoutRequest = originalRequest.url?.includes('/logout');
       if (!window.location.pathname.includes('/login') && !isLogoutRequest) {
-        console.log('Redirecting to login page');
+        console.log('Redirecting to login page after auth failure');
         window.location.href = '/login';
       } else if (isLogoutRequest) {
         console.log('Ignoring 401 error during logout process');

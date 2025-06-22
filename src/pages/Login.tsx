@@ -45,47 +45,39 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   };
-
-  return (    <Box 
-      sx={{ 
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: '4fr 8fr', md: '7fr 5fr' },
-        height: '100vh',
-        bgcolor: '#f5f5f5'
-      }}
-    >
+  return (
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <Box
-        sx={{
-          backgroundImage: 'url(https://source.unsplash.com/random/?hotel)',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: { xs: 'none', sm: 'block' }
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          mt: 8, 
+          p: 4, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          borderRadius: 2
         }}
-      />      <Paper elevation={6} square sx={{ display: 'flex' }}>
+      >
         <Box
           sx={{
-            my: 8,
-            mx: 4,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%'
           }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+        >          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
             Hotel Management Dashboard
           </Typography>
+          {error && (
+            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-            {error && (
-              <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
-                {error}
-              </Alert>
-            )}
             <TextField
               margin="normal"
               required
@@ -97,6 +89,7 @@ const Login: React.FC = () => {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 2 }}
             />
             <TextField
               margin="normal"
@@ -114,20 +107,20 @@ const Login: React.FC = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, py: 1.2 }}
               disabled={loading}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
             <Box sx={{ mt: 2, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
-                * Demo credentials: admin@example.com / password
+                * Demo credentials: walc@gmail.com / admin1234
               </Typography>
             </Box>
           </Box>
         </Box>
       </Paper>
-    </Box>
+    </Container>
   );
 };
 
