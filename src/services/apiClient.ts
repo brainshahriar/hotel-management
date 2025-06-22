@@ -12,15 +12,51 @@ const apiClient: AxiosInstance = axios.create({
 // Request interceptor for API calls
 apiClient.interceptors.request.use(
   (config) => {
-    // Only add authorization header to protected routes (/admin/*)
-    const isProtectedRoute = config.url?.includes('/admin/');
+    // Define protected routes - admin routes and other protected endpoints
+    const protectedRoutes = [
+      '/admin/',
+      '/logout',
+      '/user',
+      '/users',
+      '/profile'
+    ];
+    
+    // Define explicitly public routes that should never include auth token
+    const publicRoutes = [
+      '/properties',
+    ];
+    
+    // Check if the current URL is a protected route
+    const isProtectedRoute = protectedRoutes.some(route => 
+      config.url?.includes(route)
+    );
+    
+    // Check if the current URL is explicitly a public route
+    const isPublicRoute = publicRoutes.some(route => {
+      // Check if it's an exact public route match or a public route with an ID parameter
+      // For example, /properties/123 should match /properties in our publicRoutes array
+      if (config.url) {
+        const urlParts = config.url.split('/');
+        const routeParts = route.split('/');
+        
+        // Match the first part (e.g., 'properties' in '/properties/123')
+        return urlParts[1] === routeParts[1]; // assuming routeParts[0] is '' due to leading slash
+      }
+      return false;
+    });
+    
     const token = localStorage.getItem('auth_token');
     
-    if (token && isProtectedRoute) {
-      console.log('Adding auth token to protected route:', config.url);
+    // Only include the token for protected routes or non-public routes
+    if (token && (isProtectedRoute || !isPublicRoute)) {
+      if (isProtectedRoute) {
+        console.log('Adding auth token to protected route:', config.url);
+      } else {
+        console.log('Adding auth token to request:', config.url);
+      }
       config.headers.Authorization = `Bearer ${token}`;
-    } else if (isProtectedRoute) {
-      console.log('Warning: No auth token available for protected route:', config.url);
+    } else if (isProtectedRoute && !token) {
+      console.warn('Warning: No auth token available for protected route:', config.url);
     } else {
       console.log('Public route accessed, no auth token needed:', config.url);
     }
@@ -46,8 +82,7 @@ apiClient.interceptors.response.use(
       console.log('Token found in response:', !!token);
     }
     return response;
-  },
-  async (error) => {
+  },  async (error) => {
     console.error('Response error:', error.response?.status, error.message);
     const originalRequest = error.config;
     
@@ -61,10 +96,13 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_time');
       
-      // Only redirect if not already on login page to avoid loops
-      if (!window.location.pathname.includes('/login')) {
+      // Don't redirect if this is a logout request or if already on login page
+      const isLogoutRequest = originalRequest.url?.includes('/logout');
+      if (!window.location.pathname.includes('/login') && !isLogoutRequest) {
         console.log('Redirecting to login page');
         window.location.href = '/login';
+      } else if (isLogoutRequest) {
+        console.log('Ignoring 401 error during logout process');
       }
       return Promise.reject(error);
     }

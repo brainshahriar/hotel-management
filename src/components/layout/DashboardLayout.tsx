@@ -80,10 +80,18 @@ const DashboardLayout: React.FC = () => {
   const handleUserMenuClose = () => {
     setUserMenuAnchorEl(null);
   };
-  
-  const handleLogout = async () => {
-    await AuthService.logout();
-    navigate('/login');
+    const handleLogout = async () => {
+    try {
+      console.log('Starting logout process...');
+      await AuthService.logout();
+      console.log('Logout successful, redirecting to login page');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Continue with local logout regardless of API errors
+    } finally {
+      // Always navigate to login page, even if the API logout fails
+      navigate('/login');
+    }
   };
   
   const isActive = (path: string) => {

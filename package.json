@@ -23,6 +23,7 @@
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "formik": "^2.4.6",
+    "http-proxy": "^1.18.1",
     "http-proxy-middleware": "^3.0.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -56,5 +57,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cors-anywhere": "^0.4.4"
   }
 }

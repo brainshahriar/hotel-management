@@ -28,13 +28,29 @@ export const AuthService = {  // Login and get token
     const response = await apiClient.get('/users');
     return response.data;
   },
-  
-  // Logout
+    // Logout
   logout: async () => {
     try {
-      await apiClient.post('/logout');
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        // Explicitly set the Authorization header for the logout request
+        await apiClient.post('/logout', {}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log('Logout API request successful');
+      } else {
+        console.warn('No auth token found when attempting to logout');
+      }
+    } catch (error) {
+      console.error('Logout API request failed:', error);
+      // Continue with client-side logout even if API request fails
     } finally {
+      // Always clear local storage regardless of API response
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_time');
+      console.log('Local auth data cleared');
     }
   },
   
